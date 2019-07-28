@@ -7,10 +7,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
+import android.view.Gravity;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
@@ -37,18 +39,17 @@ public class MainActivity extends AppCompatActivity {
 
         //This should store a user. Not a 'real' function. Just for testing
         //enterTableVal();
-        getTableVal();
-        Log.d("GLOBALREPLY: ", globalReply); //proves that the username is found
+        //getTableVal();
+        //extractUserInfo(globalReply);
 
         EditText editText = (EditText) findViewById(R.id.editText);
         EditText editText2 = (EditText) findViewById(R.id.editText2);
 
-        //TextView invalidLogin = findViewById(R.id.invalidLogin);
 
-        //invalidLogin.setText(""); //make blank
 
     //    ImageView background = findViewById(R.id.imageView3);
     //    background.setImageResource(R.drawable.background2);
+
 
     }
 
@@ -71,34 +72,33 @@ public class MainActivity extends AppCompatActivity {
         if (search == 1) { //Provider
             Toast toast=Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
-            toast.show(); //Shows toast message
+            toast.show();
             intent.putExtra(EXTRA_MESSAGE, master);
             startActivity(intent);
         }
         else if (search == 2) { //Consumer
             Toast toast=Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
-            toast.show(); //Shows toast message
+            toast.show();
             intent2.putExtra(EXTRA_MESSAGE, master);
             startActivity(intent2);
         }
         else {
-            Toast toast=Toast.makeText(getApplicationContext(), "Invalid Password or Username", Toast.LENGTH_SHORT);
+            Toast toast=Toast.makeText(getApplicationContext(), "Invalid Username or Password", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
-            toast.show(); //Shows toast message
+            toast.show();
         }
     }
 
     public void createAcc(View view)
     {
-    	//TextView invalidLogin = findViewById(R.id.invalidLogin);
-    	//invalidLogin.setText(globalReply); //make blank
-        Toast toast=Toast.makeText(getApplicationContext(), globalReply, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
-        toast.show();
 
-        Intent createAcctActIntent = new Intent(this, CreateAccActivity.class);
-        startActivity(createAcctActIntent);
+        Intent intent = new Intent(this, CreateAccActivity.class);
+        startActivity(intent);
+
+        //Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(
+        //        "https://webchat.botframework.com/embed/my-qna-service2-bot?s=lUEGFT6F1oc.Dh-naOmHujoVnlVCpdxSekbbvgn3hcbSsNK-FZt_vP0"));
+        //startActivity(intent);
     }
 
     private int searchTable(String user)
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     public static void enterTableVal()
     {
         final MobileServiceTable<DummyTable> mDummyTable = mClient.getTable(DummyTable.class);
-        final DummyTable item = new DummyTable("Biggy", "Smalls");
+        final DummyTable item = new DummyTable("Whataburger", "Yum");
 
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
             @Override
@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static void getTableVal() {
         final MobileServiceTable<DummyTable> mTable = mClient.getTable(DummyTable.class);
-        //String reply;
 
         @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             List<DummyTable> res = null;
@@ -152,37 +151,39 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected String doInBackground(Void... params) {
+                String Result = "0";
                 try {
-                    res = mTable
+                   res = mTable
                             .select("username")
                             .execute()
                             .get();
+
                     obj = res.get(0);
                     int i = 0;
                     while (obj != null){
                         obj = res.get(i);
-                        //Result = obj.getUsername();
-                        //Log.d("TASKREPLY0: ", Result);
-                        //if (Result.equals("Calvin")) {
-                        //    break;
-                        //}
+                        Result = obj.getUsername();
+                        Log.d("TASKREPLY0: ", Result);
+                        if (Result.equals("Calvin")) {
+                            break;
+                        }
                         i = i + 1;
                     }
+
 
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                return null;
+
+                return Result;
             }
 
-//            @Override
-//            protected void onPostExecute(String Result){
-//
-//                getReply(Result);
-//            }
-                
+            @Override
+            protected void onPostExecute(String Result){
+                getReply(Result);
+            }
         };
         runAsyncTask2(task);
 

@@ -1,12 +1,16 @@
 package com.example.adspot;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
@@ -27,9 +31,6 @@ public class CreateAccActivity extends AppCompatActivity {
         TextView welcomeText = findViewById(R.id.textView3);
         welcomeText.setText("Please enter your info to create a user account.");
 
-        TextView errMsg = findViewById(R.id.createErr);
-        errMsg.setText("");
-
     }
 
     public void newUserAcc(View view)
@@ -37,6 +38,10 @@ public class CreateAccActivity extends AppCompatActivity {
         String username;
         String password1;
         String password2;
+        Switch consumer = (Switch) findViewById(R.id.switch1);
+        Switch provider = (Switch) findViewById(R.id.switch2);
+        Boolean consumerState = consumer.isChecked();
+        Boolean providerState = provider.isChecked();
 
         EditText editText1 = (EditText) findViewById(R.id.usernameText);
         username = editText1.getText().toString();
@@ -46,16 +51,32 @@ public class CreateAccActivity extends AppCompatActivity {
 
         EditText editText3 = (EditText) findViewById(R.id.password2Text);
         password2 = editText3.getText().toString();
-
-        if (password1.equals(password2)) {
-            enterTableVal(username, password1);
-            TextView errMsg = findViewById(R.id.createErr);
-            errMsg.setText("Account Created!");
+        if (username.equals("")){
+            Toast toast=Toast.makeText(getApplicationContext(), "Please enter a username", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
+            toast.show();
+        }
+        if (!username.equals("") && password1.equals(password2) && !password1.equals("") && !password2.equals("")) {
+            if(consumer.isChecked() ^ provider.isChecked()){
+                //consumer XOR provider created account
+                enterTableVal(username, password1);
+                Toast toast=Toast.makeText(getApplicationContext(), "Account Created!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
+                toast.show();
+                Intent acctCreatedIntent = new Intent(this, MainActivity.class);
+                startActivity(acctCreatedIntent);
+            }
+            else{
+                Toast toast=Toast.makeText(getApplicationContext(), "Please select an account type", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
+                toast.show();
+            }
         }
 
-        if (!(password1.equals(password2))){
-            TextView errMsg = findViewById(R.id.createErr);
-            errMsg.setText("Error! Passwords do not match.");
+        if (!(password1.equals(password2)) || password1.equals("") || password2.equals("")){
+            Toast toast=Toast.makeText(getApplicationContext(), "Error! Passwords do not match.", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM,0,150);
+            toast.show();
         }
 
     }
