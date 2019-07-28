@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AdSpot</string>
+    <string name="edit_message">Username</string>
+    <string name="edit_message2">Password</string>
+    <string name="button_send">Login</string>
+    <string name="button_create">Create Account</string>
+</resources>
